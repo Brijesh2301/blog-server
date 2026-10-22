@@ -1,0 +1,19 @@
+{
+  /*
+   * The BUILD config. `tsconfig.json` stays the project-wide one.
+   *
+   * Tests must be inside the main project — typescript-eslint resolves types
+   * through it, so excluding them there makes every test file unlintable with
+   * "was not found by the project service", and they stop being type-checked
+   * at all.
+   *
+   * But they must NOT be emitted: `tsc -p tsconfig.json` was compiling them
+   * straight into dist/, so the production image shipped test code. `tsx
+   * --test` runs them from source, so nothing ever needs them compiled.
+   *
+   * Hence two configs. Checking and linting use the full project; `npm run
+   * build` uses this one.
+   */
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
+}
