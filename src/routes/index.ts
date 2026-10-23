@@ -1,5 +1,5 @@
 import { Router } from 'express'
-
+import passwordResetRouter from './password-reset.js'
 import { adminRouter } from './admin.routes.js'
 import { audioRouter } from './audio.routes.js'
 import { authRouter } from './auth.routes.js'
@@ -20,6 +20,7 @@ import { taxonomyRouter } from './taxonomy.routes.js'
 export const apiRouter: Router = Router()
 
 apiRouter.use('/auth', authRouter)
+apiRouter.use('/auth', passwordResetRouter)
 apiRouter.use('/admin', adminRouter)
 apiRouter.use('/posts', postsRouter)
 apiRouter.use('/redirects', redirectsRouter)

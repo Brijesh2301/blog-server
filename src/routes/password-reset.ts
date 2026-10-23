@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs'
 import { and, eq, gt, isNull } from 'drizzle-orm'
 import { Router } from 'express'
 import { z } from 'zod'
-
 import { db } from '../db/index.js'
 import { passwordResetTokens, users } from '../db/schema.js'
 
