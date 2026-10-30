@@ -4,7 +4,7 @@ import path from 'node:path'
 
 import { desc, eq } from 'drizzle-orm'
 import sharp from 'sharp'
-
+import { uploadBuffer } from '../lib/cloudinary.js'
 import { env } from '../config/env.js'
 import { db } from '../db/index.js'
 import { media } from '../db/schema.js'
@@ -153,25 +153,27 @@ export async function uploadImage(input: {
 
   const { data, info } = await pipeline.toBuffer({ resolveWithObject: true })
   const filename = `${base}.webp`
-  await writeFile(path.join(UPLOAD_ROOT, filename), data)
-
+  await writeFile(path.join(UPLOAD_ROOT, filename), data)const { url } = await uploadBuffer(data, base)
   // A separate small file for the library grid. Loading sixty 1920px images
   // to render thumbnails is the kind of thing that makes an admin feel slow.
   const thumbName = `${base}-thumb.webp`
-  await writeFile(
-    path.join(UPLOAD_ROOT, thumbName),
-    await sharp(data)
-      .resize({ width: THUMB_WIDTH, withoutEnlargement: true })
-      .webp({ quality: 70 })
-      .toBuffer()
-  )
+  // Upload the converted WebP to Cloudinary (replaces writeFile to disk)
+  const { url } = await uploadBuffer(data, base)
+
+  // Thumbnail
+  const thumbName = `${base}-thumb.webp`
+  const thumbBuffer = await sharp(data)
+    .resize({ width: THUMB_WIDTH, withoutEnlargement: true })
+    .webp({ quality: 70 })
+    .toBuffer()
+  await uploadBuffer(thumbBuffer, `${base}-thumb`)
 
   const [row] = await db
     .insert(media)
     .values({
-      url: publicUrl(filename),
+      url,
       providerId: base,
-      provider: 'local',
+      provider: 'cloudinary',
       width: info.width,
       height: info.height,
       format: 'webp',
