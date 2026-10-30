@@ -17,3 +17,7 @@ export function uploadBuffer(buffer: Buffer, publicId: string): Promise<{ url: s
       .end(buffer)
   })
 }
+
+export async function deleteByPublicId(publicId: string): Promise<void> {
+  await cloudinary.uploader.destroy(publicId, { resource_type: 'image' })
+}

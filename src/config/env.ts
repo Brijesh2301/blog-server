@@ -20,6 +20,9 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(5000),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 
+
+
+
   /** Comma-separated browser origins allowed to send credentials. */
   CORS_ORIGINS: z
     .string()
@@ -30,6 +33,12 @@ const schema = z.object({
         .map((origin) => origin.trim())
         .filter(Boolean)
     ),
+
+
+  CLOUDINARY_CLOUD_NAME: z.string().min(1),
+  CLOUDINARY_API_KEY: z.string().min(1),
+  CLOUDINARY_API_SECRET: z.string().min(1),
+
 
   // ── Database ──────────────────────────────────────────────────────────────
   DATABASE_URL: z
